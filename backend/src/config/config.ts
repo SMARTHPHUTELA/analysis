@@ -17,13 +17,13 @@ export const config = {
 
   db: {
     url:     required('DATABASE_URL'),
-    poolMin: parseInt(optional('DB_POOL_MIN', '2'), 10),
+    poolMin: parseInt(optional('DB_POOL_MIN', '2'),  10),
     poolMax: parseInt(optional('DB_POOL_MAX', '20'), 10),
   },
 
   redis: {
     url:              required('REDIS_URL'),
-    apiKeyTtl:        parseInt(optional('REDIS_API_KEY_TTL_SECONDS', '300'), 10),
+    apiKeyTtl:        parseInt(optional('REDIS_API_KEY_TTL_SECONDS', '300'),  10),
     responseCacheTtl: parseInt(optional('REDIS_RESPONSE_CACHE_TTL_SECONDS', '3600'), 10),
   },
 
@@ -32,8 +32,10 @@ export const config = {
   },
 
   auth: {
-    jwtSecret:   required('JWT_SECRET'),
-    adminApiKey: required('ADMIN_API_KEY'),
+    jwtSecret:     required('JWT_SECRET'),
+    jwtExpiresIn:  optional('JWT_EXPIRES_IN', '7d'),
+    cookieSecret:  required('COOKIE_SECRET'),
+    adminApiKey:   optional('ADMIN_API_KEY', ''),
   },
 
   lruCache: {
@@ -44,5 +46,17 @@ export const config = {
   alerts: {
     slackWebhookUrl: process.env['SLACK_WEBHOOK_URL'],
     fromEmail:       process.env['ALERT_FROM_EMAIL'],
+  },
+
+  smtp: {
+    host:     optional('SMTP_HOST', 'smtp.gmail.com'),
+    port:     parseInt(optional('SMTP_PORT', '587'), 10),
+    user:     optional('SMTP_USER', ''),
+    pass:     optional('SMTP_PASS', ''),
+    from:     optional('SMTP_FROM', 'AI Cost Proxy <noreply@example.com>'),
+  },
+
+  app: {
+    frontendUrl: optional('FRONTEND_URL', 'http://localhost:5173'),
   },
 } as const;
