@@ -1,5 +1,5 @@
 import { useState, useEffect }     from 'react';
-import { CURRENT_ORG_ID }          from '@/App';
+import { useAuth } from '@/context/AuthContext';
 import { useOrganization }         from '@/hooks/useOrganization';
 import {
   useSummary,
@@ -34,23 +34,25 @@ interface Savings {
 }
 
 export default function DashboardPage() {
-  const [days, setDays] = useState(30);
+  const [days, setDays]   = useState(30);
+  const { user }          = useAuth();
+  const orgId             = user?.organization_id ?? '';
   const [savings, setSavings] = useState<Savings | null>(null);
   const [savingsLoading, setSavingsLoading] = useState(true);
 
-  const { org } = useOrganization(CURRENT_ORG_ID);
+  const { org } = useOrganization(orgId);
 
-  const { data: summary,  loading: summaryLoading  } = useSummary(CURRENT_ORG_ID);
-  const { data: daily,    loading: dailyLoading    } = useDailySpend(CURRENT_ORG_ID, days);
-  const { data: features, loading: featuresLoading } = useFeatureBreakdown(CURRENT_ORG_ID, days);
-  const { data: models,   loading: modelsLoading   } = useModelBreakdown(CURRENT_ORG_ID, days);
+  const { data: summary,  loading: summaryLoading  } = useSummary(orgId);
+  const { data: daily,    loading: dailyLoading    } = useDailySpend(orgId, days);
+  const { data: features, loading: featuresLoading } = useFeatureBreakdown(orgId, days);
+  const { data: models,   loading: modelsLoading   } = useModelBreakdown(orgId, days);
 
   // Fetch savings whenever days changes
   useEffect(() => {
-    if (!CURRENT_ORG_ID) return;
+    if (!orgId) return;
     setSavingsLoading(true);
     analyticsApi
-      .savings(CURRENT_ORG_ID, days)
+      .savings(orgId, days)
       .then((data:Savings) => setSavings(data))
       .catch(() => setSavings(null))
       .finally(() => setSavingsLoading(false));

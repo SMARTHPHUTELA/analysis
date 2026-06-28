@@ -1,5 +1,5 @@
 import { useState }       from 'react';
-import { CURRENT_ORG_ID } from '@/App';
+import { useAuth } from '@/context/AuthContext';
 import { useApiKeys }     from '@/hooks/useApiKeys';
 import Table              from '@/components/ui/Table';
 import Badge              from '@/components/ui/Badge';
@@ -255,7 +255,9 @@ function RevokeModal({
 
 // ── Main Page ──────────────────────────────────────────────────
 export default function ApiKeysPage() {
-  const { keys, loading, create, revoke } = useApiKeys(CURRENT_ORG_ID);
+  const { user }                          = useAuth();
+  const orgId                             = user?.organization_id ?? '';
+  const { keys, loading, create, revoke } = useApiKeys(orgId);
   const [createOpen, setCreateOpen] = useState(false);
   const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null);
 

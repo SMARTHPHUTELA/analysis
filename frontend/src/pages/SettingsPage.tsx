@@ -1,5 +1,5 @@
 import { useState, useEffect }  from 'react';
-import { CURRENT_ORG_ID }       from '@/App';
+import { useAuth } from '@/context/AuthContext';
 import { useOrganization }      from '@/hooks/useOrganization';
 import { credentialApi }        from '@/services/api';
 import { ProviderType }         from '@/types';
@@ -32,7 +32,9 @@ function Section({
 
 // ── Budget section ─────────────────────────────────────────────
 function BudgetSection() {
-  const { org, loading, update } = useOrganization(CURRENT_ORG_ID);
+  const { user }                 = useAuth();
+  const orgId                    = user?.organization_id ?? '';
+  const { org, loading, update } = useOrganization(orgId);
   const [budget,  setBudget]  = useState('');
   const [email,   setEmail]   = useState('');
   const [slack,   setSlack]   = useState('');
@@ -174,7 +176,9 @@ function CredentialSection() {
     try {
       setSaving(true);
       setError(null);
-      await credentialApi.upsert(CURRENT_ORG_ID, {
+      const { user } = useAuth();
+      const orgId    = user?.organization_id ?? '';
+      await credentialApi.upsert(orgId, {
         provider,
         api_key: apiKey.trim(),
         label:   label || 'default',
@@ -293,7 +297,9 @@ function CredentialSection() {
 
 // ── Organization info section ──────────────────────────────────
 function OrgInfoSection() {
-  const { org, loading } = useOrganization(CURRENT_ORG_ID);
+  const { user }         = useAuth();
+  const orgId            = user?.organization_id ?? '';
+  const { org, loading } = useOrganization(orgId);
 
   if (loading) {
     return (

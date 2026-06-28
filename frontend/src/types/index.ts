@@ -88,3 +88,11 @@ export interface ApiResponse<T> {
   data:    T;
   error?:  { message: string };
 }
+
+export interface AuthUser {
+  id:              string;
+  name:            string;
+  email:           string;
+  role:            'admin' | 'manager';
+  organization_id: string | null;
+}

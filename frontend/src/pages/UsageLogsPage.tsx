@@ -1,5 +1,5 @@
 import { useState }       from 'react';
-import { CURRENT_ORG_ID } from '@/App';
+import { useAuth } from '@/context/AuthContext';
 import { useUsageLogs }   from '@/hooks/useAnalytics';
 import Table              from '@/components/ui/Table';
 import Badge              from '@/components/ui/Badge';
@@ -20,10 +20,10 @@ const STATUS_VARIANT: Record<RequestStatus, 'success' | 'error' | 'warning' | 'i
 
 export default function UsageLogsPage() {
   const [limit] = useState(50);
-  const {
-    data, loading, offset,
-    nextPage, prevPage, refetch,
-  } = useUsageLogs(CURRENT_ORG_ID, limit);
+  const { user }   = useAuth();
+  const orgId      = user?.organization_id ?? '';
+  const { data, loading, offset, nextPage, prevPage, refetch } =
+  useUsageLogs(orgId, limit);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
