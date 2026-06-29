@@ -52,6 +52,8 @@ export interface UsageLog {
   input_cost:        number;
   output_cost:       number;
   total_cost:        number;
+  saved_cost:        number;   // ← add this
+  saved_tokens:      number; 
   latency_ms:        number | null;
   cache_hit:         boolean;
   request_status:    RequestStatus;

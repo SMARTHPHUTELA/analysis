@@ -126,27 +126,50 @@ export const usageRepository = {
     );
   },
 
+  // async getDailySpend(
+  //   organizationId: string,
+  //   fromDate: Date,
+  //   toDate: Date
+  // ): Promise<any[]> {
+  //   return query(
+  //     `SELECT
+  //        DATE(created_at)         AS date,
+  //        COUNT(*)::int            AS request_count,
+  //        SUM(total_cost)          AS total_cost,
+  //        SUM(total_tokens)::int   AS total_tokens,
+  //        SUM(saved_cost)          AS saved_cost
+  //      FROM usage_logs
+  //      WHERE organization_id = $1
+  //        AND created_at BETWEEN $2 AND $3
+  //        AND request_status != 'blocked'
+  //      GROUP BY DATE(created_at)
+  //      ORDER BY date ASC`,
+  //     [organizationId, fromDate, toDate]
+  //   );
+  // },
+
   async getDailySpend(
-    organizationId: string,
-    fromDate: Date,
-    toDate: Date
-  ): Promise<any[]> {
-    return query(
-      `SELECT
-         DATE(created_at)         AS date,
-         COUNT(*)::int            AS request_count,
-         SUM(total_cost)          AS total_cost,
-         SUM(total_tokens)::int   AS total_tokens,
-         SUM(saved_cost)          AS saved_cost
-       FROM usage_logs
-       WHERE organization_id = $1
-         AND created_at BETWEEN $2 AND $3
-         AND request_status != 'blocked'
-       GROUP BY DATE(created_at)
-       ORDER BY date ASC`,
-      [organizationId, fromDate, toDate]
-    );
-  },
+  organizationId: string,
+  fromDate: Date,
+  toDate: Date
+): Promise<any[]> {
+  return query(
+    `SELECT
+       DATE(created_at)                    AS date,
+       COUNT(*)::int                       AS request_count,
+       COALESCE(SUM(total_cost), 0)        AS total_cost,
+       COALESCE(SUM(total_tokens), 0)::int AS total_tokens,
+       COALESCE(SUM(saved_cost), 0)        AS saved_cost,
+       COUNT(*) FILTER (WHERE cache_hit = TRUE)::int AS cache_hit_count,
+       COUNT(*) FILTER (WHERE request_status = 'error')::int AS error_count
+     FROM usage_logs
+     WHERE organization_id = $1
+       AND created_at BETWEEN $2 AND $3
+     GROUP BY DATE(created_at)
+     ORDER BY date ASC`,
+    [organizationId, fromDate, toDate]
+  );
+},
 
   async getTotalSavings(
     organizationId: string,

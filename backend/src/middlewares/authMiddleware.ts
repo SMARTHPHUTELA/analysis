@@ -88,7 +88,7 @@ export async function authMiddleware(
       organizationSlug: (row as any).org_slug,
       keyId:            row.id,
       scopes:           row.scopes,
-      monthlyBudget:    Number((row as any).monthly_budget),
+      monthlyBudget:    0,
       orgStatus:        (row as any).org_status,
     };
 
